@@ -1,0 +1,152 @@
+<html data-cast-api-enabled='true'>
+
+<title>Cast Keys by Nathan Jones</title>
+
+<link rel="icon" href="http://natejon.es/favicon.ico" />
+<link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="js/keyboard.js"></script>
+
+<style>
+	body { font-family: 'Open Sans', Helvetica, Arial; color: #505050; }
+	header { font-size: 2em; text-align: center; }
+	h1, h2 { font-weight: 300; margin: 0; }
+	h1 { color: #D61500; }
+	pre { white-space: pre-wrap; }
+	.tip { font-size: 0.75em; color: #777; margin: 0.5em 0; width: 100%; text-align: center; }
+</style>
+
+<script>
+	var cast_api, 
+		cv_activity, 
+		castAppId: '{ Your Cast App Id Here }';
+	
+	var typeKey = function(keycode){
+		var pre = document.getElementById("message");
+		
+		if (keycode == 8) {
+			pre.innerText = pre.innerText.substring(0, pre.innerText.length -1);
+		} else {
+			pre.innerText = pre.innerText + String.fromCharCode(keycode);	
+		}
+	};
+	
+	$(function() {
+		// Wait for API to post a message to us
+		window.addEventListener("message", function(event) {
+			if (event.source == window && event.data && 
+				event.data.source == "CastApi" && event.data.event == "Hello"){
+					initializeApi();
+				}		
+		});
+	
+		initializeApi = function() { 
+			cast_api = new cast.Api();
+			cast_api.addReceiverListener(castAppId, onReceiverList);
+		};
+	
+		onReceiverList = function(list) {
+			if (list.length > 0) doLaunch(list[0]);
+		};	
+		
+		doLaunch = function(receiver) {
+		  var request = new cast.LaunchRequest(castAppId, receiver);		 
+		  cast_api.launch(request, onLaunch);
+		};
+		
+		onLaunch = function(activity) {
+			cv_activity = activity.status === "running" ? activity : null;
+		};
+		
+	}); // ready
+	
+	//listen for keyup events to send to chromecast receiever
+	$(document).on('keypress', function(event) {
+		var keycode = (event.keycode ? event.keyCode : event.which);  
+
+		typeKey(keycode);
+		
+		if (cv_activity) cast_api.sendMessage(cv_activity.activityId, "Test", 
+			{"type": "keyup", "keycode":keycode});
+	});
+	
+	$(document).on('keydown', function(event){
+		var keycode = (event.keycode ? event.keyCode : event.which);
+		if (keycode == 8) {
+			cast_api.sendMessage(cv_activity.activityId, "Test", {"type": "keyup", "keycode":keycode});
+			typeKey(keycode);	
+			event.preventDefault();
+		}
+	});	
+</script>
+
+
+<body>
+	<header>
+		<h1>NathanRJones.com</h1>
+		<h2>Cast Keys</h2>
+	</header>
+	
+	<div id="container">
+		<pre id="message"></pre>
+		<div class="tip">Send characters to your Chromecast using your keyboard or mouse.</div>
+		<ul id="keyboard">
+			<li class="symbol"><span class="off">`</span><span class="on">~</span></li>
+			<li class="symbol"><span class="off">1</span><span class="on">!</span></li>
+			<li class="symbol"><span class="off">2</span><span class="on">@</span></li>
+			<li class="symbol"><span class="off">3</span><span class="on">#</span></li>
+			<li class="symbol"><span class="off">4</span><span class="on">$</span></li>
+			<li class="symbol"><span class="off">5</span><span class="on">%</span></li>
+			<li class="symbol"><span class="off">6</span><span class="on">^</span></li>
+			<li class="symbol"><span class="off">7</span><span class="on">&amp;</span></li>
+			<li class="symbol"><span class="off">8</span><span class="on">*</span></li>
+			<li class="symbol"><span class="off">9</span><span class="on">(</span></li>
+			<li class="symbol"><span class="off">0</span><span class="on">)</span></li>
+			<li class="symbol"><span class="off">-</span><span class="on">_</span></li>
+			<li class="symbol"><span class="off">=</span><span class="on">+</span></li>
+			<li class="delete lastitem">delete</li>
+			<li class="tab">tab</li>
+			<li class="letter">q</li>
+			<li class="letter">w</li>
+			<li class="letter">e</li>
+			<li class="letter">r</li>
+			<li class="letter">t</li>
+			<li class="letter">y</li>
+			<li class="letter">u</li>
+			<li class="letter">i</li>
+			<li class="letter">o</li>
+			<li class="letter">p</li>
+			<li class="symbol"><span class="off">[</span><span class="on">{</span></li>
+			<li class="symbol"><span class="off">]</span><span class="on">}</span></li>
+			<li class="symbol lastitem"><span class="off">\</span><span class="on">|</span></li>
+			<li class="capslock">caps lock</li>
+			<li class="letter">a</li>
+			<li class="letter">s</li>
+			<li class="letter">d</li>
+			<li class="letter">f</li>
+			<li class="letter">g</li>
+			<li class="letter">h</li>
+			<li class="letter">j</li>
+			<li class="letter">k</li>
+			<li class="letter">l</li>
+			<li class="symbol"><span class="off">;</span><span class="on">:</span></li>
+			<li class="symbol"><span class="off">'</span><span class="on">&quot;</span></li>
+			<li class="return lastitem">return</li>
+			<li class="left-shift">shift</li>
+			<li class="letter">z</li>
+			<li class="letter">x</li>
+			<li class="letter">c</li>
+			<li class="letter">v</li>
+			<li class="letter">b</li>
+			<li class="letter">n</li>
+			<li class="letter">m</li>
+			<li class="symbol"><span class="off">,</span><span class="on">&lt;</span></li>
+			<li class="symbol"><span class="off">.</span><span class="on">&gt;</span></li>
+			<li class="symbol"><span class="off">/</span><span class="on">?</span></li>
+			<li class="right-shift lastitem">shift</li>
+			<li class="space lastitem">&nbsp;</li>
+			<div style="clear: both;"></div>
+		</ul>
+	</div>

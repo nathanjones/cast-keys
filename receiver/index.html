@@ -1,0 +1,48 @@
+<html>
+
+<link rel="icon" href="http://natejon.es/favicon.ico" />
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,700|Inconsolata:400' rel='stylesheet' type='text/css'>
+
+<style>
+	body { font-family: 'Open Sans', Helvetica; color: #505050; background-color: #F9F9F9; font-size: 2.5em; }
+	h1, h2 { font-weight: 300; text-align: center; margin: 0; }
+	h1 { color: #D61500; }
+	h2 { margin-bottom: 0.5em; }
+	pre { white-space: pre-wrap; width: 90%; margin: 1em auto; }
+</style>
+
+<script src="https://www.gstatic.com/cast/js/receiver/1.0/cast_receiver.js"></script>
+<script type="text/javascript">
+
+	var castAppId: '{ Your Cast App Id Here }';
+
+	var receiver = new cast.receiver.Receiver(castAppId, ['Test'], "", 5);
+	    
+	// message listener   
+	var channelHandler = new cast.receiver.ChannelHandler('Test');
+	channelHandler.addChannelFactory(receiver.createChannelFactory('Test'));
+
+	//listen for messages from chromecast-sender
+	channelHandler.addEventListener(cast.receiver.Channel.EventType.MESSAGE, onMessage.bind(this));   	
+
+	//Receives keyboard event from chromecast-sender
+	function onMessage(event) {	
+		var log = document.getElementById("message");
+		var keycode = event.message.keycode;
+		console.log('Keypress: ', String.fromCharCode(keycode));
+		
+		if (keycode == 8) {
+			log.innerText = log.innerText.substring(0, log.innerText.length -1);
+		} else {
+			log.innerText = log.innerText + String.fromCharCode(keycode);	
+		}
+		
+	 }
+</script>
+
+<body>
+	<h1>NathanRJones.com</h1>
+	<h2>Cast Keys</h2>
+	<hr />
+
+	<pre id="message"></pre>
